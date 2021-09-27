@@ -3,13 +3,21 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 ENTITY ws2812b IS
+	--GENERIC(
+	--	F_CLK 		 : natural := 50000000;			-- 50Mhz
+	--	T0H   		 : real    := 0.00000040;		-- 400 ns
+	--	T1H   		 : real    := 0.00000080;		-- 800 ns
+	--	T0L   		 : real    := 0.00000085;		-- 850 ns
+	--	T1L   		 : real    := 0.00000045;		-- 450 ns
+	--	RES   		 : real    := 0.00005000		-- Above 50 us
+	--);
 	GENERIC(
-		F_CLK 		 : natural := 50000000;			-- 50Mhz
-		T0H   		 : real    := 0.00000040;		-- 400 ns
-		T1H   		 : real    := 0.00000080;		-- 800 ns
-		T0L   		 : real    := 0.00000085;		-- 850 ns
-		T1L   		 : real    := 0.00000045;		-- 450 ns
-		RES   		 : real    := 0.00005000		-- Above 50 us
+		F_CLK 		 : natural := 5;			-- 50Mhz
+		T0H   		 : real    := 0.40;			-- 400 ns
+		T1H   		 : real    := 0.80;			-- 800 ns
+		T0L   		 : real    := 0.85;			-- 850 ns
+		T1L   		 : real    := 0.45;			-- 450 ns
+		RES   		 : real    := 1.0				-- Above 50 us
 	);
 	PORT(
 		CLK, RST, FLSH 	 : IN STD_LOGIC;			-- Clock, Reset & Flush
@@ -20,11 +28,11 @@ END ENTITY ws2812b;
 
 ARCHITECTURE driver OF ws2812b IS
 	-- Convert timings to cycles.
-	constant CYC_T0H : natural := natural(T0H / (real(1) / real(f_clk))) - 1;
-	constant CYC_T1H : natural := natural(T1H / (real(1) / real(f_clk))) - 1;
-	constant CYC_T0L : natural := natural(T0L / (real(1) / real(f_clk))) - 1;
-	constant CYC_T1L : natural := natural(T1L / (real(1) / real(f_clk))) - 1;
-	constant CYC_RES : natural := natural(RES / (real(1) / real(f_clk))) - 1;
+	constant CYC_T0H : natural := natural(T0H / (real(1) / real(f_clk)));
+	constant CYC_T1H : natural := natural(T1H / (real(1) / real(f_clk)));
+	constant CYC_T0L : natural := natural(T0L / (real(1) / real(f_clk)));
+	constant CYC_T1L : natural := natural(T1L / (real(1) / real(f_clk)));
+	constant CYC_RES : natural := natural(RES / (real(1) / real(f_clk)));
 
 	-- States of Finite State Machine (FSM); IDLE, Prepare and Write High and Low and Reset.
 	type state_t is (IDLE, PREP_H, WRITE_H, PREP_L, WRITE_L, RESET);
