@@ -3,22 +3,22 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 ENTITY ws2812b IS
-	--GENERIC(
-	--	F_CLK 		 : natural := 50000000;			-- 50Mhz
-	--	T0H   		 : real    := 0.00000040;		-- 400 ns
-	--	T1H   		 : real    := 0.00000080;		-- 800 ns
-	--	T0L   		 : real    := 0.00000085;		-- 850 ns
-	--	T1L   		 : real    := 0.00000045;		-- 450 ns
-	--	RES   		 : real    := 0.00005000		-- Above 50 us
-	--);
-	GENERIC(
-		F_CLK 		 : natural := 5;			-- 50Mhz
-		T0H   		 : real    := 0.40;			-- 400 ns
-		T1H   		 : real    := 0.80;			-- 800 ns
-		T0L   		 : real    := 0.85;			-- 850 ns
-		T1L   		 : real    := 0.45;			-- 450 ns
-		RES   		 : real    := 1.0				-- Above 50 us
+	GENERIC(		 -- For FPGA
+		F_CLK 		 : natural := 50000000;			-- 50Mhz
+		T0H   		 : real    := 0.00000040;		-- 400 ns
+		T1H   		 : real    := 0.00000080;		-- 800 ns
+		T0L   		 : real    := 0.00000085;		-- 850 ns
+		T1L   		 : real    := 0.00000045;		-- 450 ns
+		RES   		 : real    := 0.00005000		-- Above 50 us
 	);
+	--GENERIC(		 -- For testbenches
+	--	F_CLK 		 : natural := 5;			-- 50Mhz
+	--	T0H   		 : real    := 0.40;			-- 400 ns
+	--	T1H   		 : real    := 0.80;			-- 800 ns
+	--	T0L   		 : real    := 0.85;			-- 850 ns
+	--	T1L   		 : real    := 0.45;			-- 450 ns
+	--	RES   		 : real    := 1.0				-- Above 50 us
+	--);
 	PORT(
 		CLK, RST, FLSH 	 : IN STD_LOGIC;			-- Clock, Reset & Flush
 		D_OUT	 	 : OUT STD_LOGIC;			-- Data out

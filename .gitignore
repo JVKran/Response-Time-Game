@@ -1,4 +1,9 @@
 *.mpf
 *.mti
 *.bak
+*.wlf
+*.txt
 /work
+/output_files
+/incremental_db
+/db
