@@ -43,7 +43,7 @@ BEGIN
 	);
 
 	PROCESS BEGIN
-		--ASSERT F_CLK < 30 REPORT "Please select generics for testbench!" severity warning;
+		-- Simulate with a simulation duration of 120000 ns.
 		CLK_tb   <= '0';
 
 		-- Use identifying bit patterns for debug purposes.
@@ -56,8 +56,8 @@ BEGIN
 		FLSH_tb  <= '0';
 		UPD_tb   <= '1';
 
-		FOR cycle IN 0 TO 6000 LOOP
-			WAIT FOR 1 ps;
+		FOR cycle IN 0 TO 14000 LOOP
+			WAIT FOR 10 ns;
 			-- Toggle clock.
 			CLK_tb <= not CLK_tb;
 

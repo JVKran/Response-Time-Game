@@ -20,7 +20,7 @@ ENTITY ws2812b IS
 	PORT(
 		CLK, UPD, FLSH 	 : IN STD_LOGIC;			-- Clock, Update & Flush
 		D_OUT	 	 : OUT STD_LOGIC;			-- Data out
-		IDX		 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update; optional todo, make dynamic.
+		IDX		 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update; optional todo, scale on LED_AMT.
 		RED, GREEN, BLUE : IN STD_LOGIC_VECTOR(7 DOWNTO 0)	-- Red, Green & Blue inputs
 	);
 END ENTITY ws2812b;
@@ -39,7 +39,7 @@ ARCHITECTURE driver OF ws2812b IS
 
 	-- Support for multi-color ring
 	TYPE memory_t IS ARRAY (LED_AMT - 1 DOWNTO 0) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
-	SIGNAL memory : memory_t;
+	SIGNAL memory : memory_t := (others=>(others=>'0'));
 
 	-- Signals for transmission.
 	SIGNAL bit_idx 	: INTEGER RANGE 23 DOWNTO 0 		:= 23;	-- Bit index in rgb values.
@@ -56,7 +56,8 @@ BEGIN
 					state 	<= PREP_H;
 					bit_idx <= 23;
 					led_idx <= 0;
-				ELSIF UPD = '1' THEN
+				END IF;
+				IF UPD = '1' THEN
 					memory(TO_INTEGER(UNSIGNED(IDX))) <= GREEN & RED & BLUE;
 				END IF;
 			WHEN PREP_H =>
