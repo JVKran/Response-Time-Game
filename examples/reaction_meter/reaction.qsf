@@ -18,14 +18,14 @@
 #
 # Quartus Prime
 # Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-# Date created = 18:23:50  September 28, 2021
+# Date created = 11:22:16  October 04, 2021
 #
 # -------------------------------------------------------------------------- #
 #
 # Notes:
 #
 # 1) The default values for assignments are stored in the file:
-#		color_loop_assignment_defaults.qdf
+#		reaction_assignment_defaults.qdf
 #    If this file doesn't exist, see file:
 #		assignment_defaults.qdf
 #
@@ -38,12 +38,14 @@
 
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSEMA5F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY color_loop
+set_global_assignment -name TOP_LEVEL_ENTITY reaction
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.1.0
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "18:23:50  SEPTEMBER 28, 2021"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "11:22:16  OCTOBER 04, 2021"
 set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"
-set_global_assignment -name VHDL_FILE ws2812.vhd
-set_global_assignment -name VHDL_FILE color_loop.vhd
+set_global_assignment -name VHDL_FILE ../../lib/ws2812/ws2812.vhd
+set_global_assignment -name VHDL_FILE ../../lib/rng/prng.vhd
+set_global_assignment -name VHDL_FILE ../../lib/ssd/ssd.vhd
+set_global_assignment -name VHDL_FILE reaction.vhd
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name ENABLE_OCT_DONE OFF
 set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "PASSIVE SERIAL"
@@ -58,7 +60,36 @@ set_global_assignment -name ACTIVE_SERIAL_CLOCK FREQ_100MHZ
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_AA14 -to BTN
 set_location_assignment PIN_AF14 -to CLK_50
-set_location_assignment PIN_Y17 -to LED
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LED
+set_location_assignment PIN_Y17 -to D_OUT
+set_location_assignment PIN_AH28 -to SSD_0[6]
+set_location_assignment PIN_AG28 -to SSD_0[5]
+set_location_assignment PIN_AF28 -to SSD_0[4]
+set_location_assignment PIN_AG27 -to SSD_0[3]
+set_location_assignment PIN_AE28 -to SSD_0[2]
+set_location_assignment PIN_AE27 -to SSD_0[1]
+set_location_assignment PIN_AE26 -to SSD_0[0]
+set_location_assignment PIN_AD27 -to SSD_1[6]
+set_location_assignment PIN_AF30 -to SSD_1[5]
+set_location_assignment PIN_AF29 -to SSD_1[4]
+set_location_assignment PIN_AG30 -to SSD_1[3]
+set_location_assignment PIN_AH30 -to SSD_1[2]
+set_location_assignment PIN_AH29 -to SSD_1[1]
+set_location_assignment PIN_AJ29 -to SSD_1[0]
+set_location_assignment PIN_AC30 -to SSD_2[6]
+set_location_assignment PIN_AC29 -to SSD_2[5]
+set_location_assignment PIN_AD30 -to SSD_2[4]
+set_location_assignment PIN_AC28 -to SSD_2[3]
+set_location_assignment PIN_AD29 -to SSD_2[2]
+set_location_assignment PIN_AE29 -to SSD_2[1]
+set_location_assignment PIN_AB23 -to SSD_2[0]
+set_location_assignment PIN_AB22 -to SSD_3[6]
+set_location_assignment PIN_AB25 -to SSD_3[5]
+set_location_assignment PIN_AB28 -to SSD_3[4]
+set_location_assignment PIN_AC25 -to SSD_3[3]
+set_location_assignment PIN_AD25 -to SSD_3[2]
+set_location_assignment PIN_AC27 -to SSD_3[1]
+set_location_assignment PIN_AD26 -to SSD_3[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to D_OUT
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

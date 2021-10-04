@@ -3,7 +3,7 @@
 *.bak
 *.wlf
 *.txt
-/work
-/output_files
-/incremental_db
-/db
+**/work
+**/output_files
+**/incremental_db
+**/db

@@ -4,8 +4,8 @@ USE ieee.std_logic_1164.all;
 
 ENTITY reaction IS
 GENERIC (
-	max_delay	: INTEGER := 150_000_000;
-	delay_per_led	: INTEGER := 1_000_000
+	max_delay	: NATURAL := 150_000_000;
+	delay_per_led	: NATURAL := 1_000_000
 );
 PORT(
 	CLK_50, BTN			: IN STD_LOGIC;
@@ -46,7 +46,7 @@ END COMPONENT;
 
 
 TYPE state IS (IDLE, BTN_WAIT_1, DELAY, COUNTING, BTN_WAIT_2);
-SIGNAL pr_state, nx_state : state;
+SIGNAL pr_state, nx_state : state := IDLE;
 
 SIGNAL rng_en, ssd_en, led_upd, led_flsh 			: STD_LOGIC; 
 SIGNAL thousands, hundreds, tens, ones	: STD_LOGIC_VECTOR(3 DOWNTO 0);
@@ -72,8 +72,8 @@ BEGIN
 	END IF;
 END PROCESS;
 
-PROCESS(pr_state, BTN)
-	VARIABLE tick: NATURAL RANGE 0 TO max_delay := 0;
+PROCESS(pr_state, BTN, CLK_50)
+	VARIABLE tick: NATURAL RANGE 0 TO max_delay + 1 := 0;
 	VARIABLE response_time : INTEGER RANGE 0 TO 1000 := 0;
 BEGIN
 	CASE pr_state IS
@@ -89,6 +89,7 @@ BEGIN
 			rng_en <= '1';
 			IF BTN = '1' THEN
 				nx_state <= DELAY;
+				tick := 0;
 			ELSE
 				nx_state <= pr_state;
 			END IF;
