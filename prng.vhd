@@ -1,0 +1,32 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+ENTITY prng IS
+PORT ( 
+	CLK, RST, EN 	: IN STD_LOGIC;
+       	NUM 		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+);
+END prng;
+
+ARCHITECTURE driver OF prng IS
+
+signal LFSR		: STD_LOGIC_VECTOR(7 DOWNTO 0) := x"01";
+
+begin
+
+PROCESS(CLK)
+VARIABLE tmp 		: STD_LOGIC := '0';
+BEGIN
+
+IF RISING_EDGE(CLK) THEN
+   IF (RST='1') THEN
+      LFSR <= x"01"; 
+   ELSIF EN = '1' THEN
+      tmp := LFSR(4) XOR LFSR(3) XOR LFSR(2) XOR LFSR(0);
+      LFSR <= tmp & LFSR(7 DOWNTO 1);
+   END IF;
+END IF;
+END PROCESS;
+NUM <= LFSR;
+
+END driver;
