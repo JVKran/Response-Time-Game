@@ -9,25 +9,27 @@ architecture testbench of reaction_tb is
 
 COMPONENT reaction IS
 GENERIC (
-	max_delay	: NATURAL := 50;
-	delay_per_led	: NATURAL := 5
+	max_delay	: NATURAL := 1500;
+	delay_per_led	: NATURAL := 5;
+	f_clk		: INTEGER := 1
 );
 PORT(
-	CLK_50, BTN			: IN STD_LOGIC;
-	D_OUT				: OUT STD_LOGIC;
+	CLK_50, STRT_BTN, RESP_BTN	: IN STD_LOGIC;
+	LED_0				: OUT STD_LOGIC;
 	SSD_0, SSD_1, SSD_2, SSD_3	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0)
 );
 END COMPONENT;
 
-SIGNAL CLK_tb, BTN_tb				: STD_LOGIC;
-SIGNAL DOUT_tb					: STD_LOGIC;
+SIGNAL CLK_tb, STRT_BTN_tb, RESP_BTN_tb		: STD_LOGIC;
+SIGNAL LED_0_tb					: STD_LOGIC;
 SIGNAL SSD_0_tb, SSD_1_tb, SSD_2_tb, SSD_3_tb	: STD_LOGIC_VECTOR(6 downto 0);
  
 BEGIN
 	test: reaction PORT MAP (
 		CLK_50 => CLK_tb,
-		BTN => BTN_tb,
-		D_OUT => DOUT_tb,
+		STRT_BTN => STRT_BTN_tb,
+		RESP_BTN => RESP_BTN_tb,
+		LED_0 => LED_0_tb,
 		SSD_0 => SSD_0_tb,
 		SSD_1 => SSD_1_tb,
 		SSD_2 => SSD_2_tb,
@@ -37,18 +39,26 @@ BEGIN
 	PROCESS
 	BEGIN
 		-- INIT state
-		CLK_tb <= '0';
-		BTN_tb <= '1';
+		CLK_tb      <= '0';
+		RESP_BTN_tb <= '1';
+		STRT_BTN_tb <= '1';
 
 		FOR i IN 0 TO 1000000 LOOP
 			WAIT FOR 10 ps;
  			CLK_tb <= not CLK_tb;
 			
 			-- Keep button pressed then release
-			IF (i > 500 and i < 600) THEN 
-				BTN_tb <= '0'; 
+			IF (i > 50 and i < 60) THEN 
+				STRT_BTN_tb <= '0'; 
 			ELSE 
-				BTN_tb <= '1'; 
+				STRT_BTN_tb <= '1'; 
+			END IF;
+
+			-- Keep button pressed then release
+			IF (i > 1000 and i < 1200) THEN 
+				RESP_BTN_tb <= '0'; 
+			ELSE 
+				RESP_BTN_tb <= '1'; 
 			END IF;
 
 		END LOOP;
