@@ -18,10 +18,10 @@ ENTITY ws2812b IS
 		RES   		 : real    := 0.00005000		-- Above 50 us
 	);
 	PORT(
-		CLK, UPD, FLSH 	 : IN STD_LOGIC;			-- Clock, Update & Flush
-		D_OUT	 	 : OUT STD_LOGIC;			-- Data out
-		IDX		 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update; optional todo, scale on LED_AMT.
-		RED, GREEN, BLUE : IN STD_LOGIC_VECTOR(7 DOWNTO 0)	-- Red, Green & Blue inputs
+		CLK, UPD, FLSH, RST : IN STD_LOGIC;			-- Clock, Update & Flush
+		D_OUT	 	 		: OUT STD_LOGIC;			-- Data out
+		IDX		 			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update; optional todo, scale on LED_AMT.
+		RED, GREEN, BLUE 	: IN STD_LOGIC_VECTOR(7 DOWNTO 0)	-- Red, Green & Blue inputs
 	);
 END ENTITY ws2812b;
 
@@ -47,8 +47,11 @@ ARCHITECTURE driver OF ws2812b IS
 	SIGNAL counter  : unsigned(15 DOWNTO 0);			-- Maintaining of timings.
 
 BEGIN
-	PROCESS(CLK, FLSH, UPD) IS
+	PROCESS(CLK, FLSH, UPD, RST) IS
 	BEGIN IF RISING_EDGE(CLK) THEN					-- Begin if rising edge on clock.
+		IF RST = '1' THEN
+			memory <= (others=>(others=>'0'));
+		END IF;
 		CASE state IS
 			WHEN IDLE =>
 				D_OUT <= '0';

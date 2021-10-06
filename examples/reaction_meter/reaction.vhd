@@ -34,10 +34,10 @@ ARCHITECTURE driver OF reaction IS
 	
 	COMPONENT ws2812b IS
 		PORT(
-			CLK, UPD, FLSH 	 : IN STD_LOGIC;			-- Clock, Update & Flush
-			D_OUT	 	 : OUT STD_LOGIC;			-- Data out
-			IDX		 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update; optional todo, scale on LED_AMT.
-			RED, GREEN, BLUE : IN STD_LOGIC_VECTOR(7 DOWNTO 0)	-- Red, Green & Blue inputs
+			CLK, UPD, FLSH, RST : IN STD_LOGIC;			-- Clock, Update & Flush
+			D_OUT	 	 		: OUT STD_LOGIC;			-- Data out
+			IDX		 			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update; optional todo, scale on LED_AMT.
+			RED, GREEN, BLUE 	: IN STD_LOGIC_VECTOR(7 DOWNTO 0)	-- Red, Green & Blue inputs
 		);
 	END COMPONENT;
 
@@ -50,15 +50,15 @@ ARCHITECTURE driver OF reaction IS
 	SIGNAL rnd_delay	: STD_LOGIC_VECTOR (7 DOWNTO 0);
 
 	-- Response time visualization
-	SIGNAL ssd_en, led_upd, led_flsh			: STD_LOGIC; 
+	SIGNAL ssd_en, led_upd, led_flsh, led_rst			: STD_LOGIC := '0';
 	SIGNAL thousands, hundreds, tens, ones	: STD_LOGIC_VECTOR(3 DOWNTO 0);
-	SIGNAL red, green, blue						: STD_LOGIC_VECTOR (7 DOWNTO 0) := (others => '1');
+	SIGNAL red, green, blue						: STD_LOGIC_VECTOR (7 DOWNTO 0) := (others => '0');
 	SIGNAL led_idx									: STD_LOGIC_VECTOR(4 DOWNTO 0);
 
 BEGIN
 
 	rng: prng PORT MAP (CLK => CLK_50, RST => '0', EN => rng_en, NUM => rnd_delay);
-	leds: ws2812b PORT MAP (CLK => CLK_50, UPD => led_upd, FLSH => led_flsh, D_OUT => LED_0, IDX => led_idx, RED => red, GREEN => green, BLUE => blue);
+	leds: ws2812b PORT MAP (CLK => CLK_50, UPD => led_upd, FLSH => led_flsh, RST => led_rst, D_OUT => LED_0, IDX => led_idx, RED => red, GREEN => green, BLUE => blue);
 
 	thousands_ssd: ssd PORT MAP (INP => thousands, EN => ssd_en, SEG => SSD_3);
 	hundreds_ssd: ssd PORT MAP (INP => hundreds, EN => ssd_en, SEG => SSD_2);
@@ -76,6 +76,7 @@ BEGIN IF RISING_EDGE(CLK_50) THEN
 			ssd_en <=  '0';
 			led_upd <= '0';
 			led_flsh <= '0';
+			led_rst <= '0';
 			IF STRT_BTN = '0' THEN
 				state <= BTN_WAIT_1;
 			END IF;
@@ -94,6 +95,8 @@ BEGIN IF RISING_EDGE(CLK_50) THEN
 				led_idx <= "00000";
 				tick := 0;
 				response_time := 0;
+				green   <= STD_LOGIC_VECTOR(TO_UNSIGNED(255, green'length));
+				red   <= STD_LOGIC_VECTOR(TO_UNSIGNED(0, red'length));
 			END IF;
 		WHEN COUNTING =>
 			tick := tick + 1;
@@ -105,6 +108,8 @@ BEGIN IF RISING_EDGE(CLK_50) THEN
 			END IF;
 			IF tick mod delay_per_led = 0 THEN
 				led_idx   <= STD_LOGIC_VECTOR(UNSIGNED(led_idx) + 1);
+				red   <= STD_LOGIC_VECTOR(UNSIGNED(red) + 10);
+				green   <= STD_LOGIC_VECTOR(UNSIGNED(green) - 10);
 				led_upd   <= '1';
 				led_flsh  <= '1';
 			ELSE
@@ -123,6 +128,8 @@ BEGIN IF RISING_EDGE(CLK_50) THEN
 
 			IF RESP_BTN = '1' THEN
 				state <= IDLE;
+				led_rst <= '1';
+				led_flsh <= '1';
 			END IF;
 		WHEN OTHERS =>
 			tick := 0;
