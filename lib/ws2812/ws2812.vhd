@@ -1,6 +1,6 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
 -- On assertion of 'UPD' the color of the currently selected LED 'IDX' is
 -- set to the color present on the 'RED', 'GREEN' and 'BLUE' buses. This can
@@ -27,11 +27,11 @@ END ENTITY ws2812b;
 
 ARCHITECTURE driver OF ws2812b IS
 	-- Convert timings to cycles.
-	constant CYC_T0H : natural := natural(T0H / (real(1) / real(f_clk)));
-	constant CYC_T1H : natural := natural(T1H / (real(1) / real(f_clk)));
-	constant CYC_T0L : natural := natural(T0L / (real(1) / real(f_clk)));
-	constant CYC_T1L : natural := natural(T1L / (real(1) / real(f_clk)));
-	constant CYC_RES : natural := natural(RES / (real(1) / real(f_clk)));
+	CONSTANT CYC_T0H : natural := natural(T0H / (real(1) / real(f_clk)));
+	CONSTANT CYC_T1H : natural := natural(T1H / (real(1) / real(f_clk)));
+	CONSTANT CYC_T0L : natural := natural(T0L / (real(1) / real(f_clk)));
+	CONSTANT CYC_T1L : natural := natural(T1L / (real(1) / real(f_clk)));
+	CONSTANT CYC_RES : natural := natural(RES / (real(1) / real(f_clk)));
 
 	-- States of Finite State Machine (FSM); IDLE, Prepare and Write High and Low and Reset.
 	TYPE state_t IS (IDLE, PREP_H, WRITE_H, PREP_L, WRITE_L, RESET);
