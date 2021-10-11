@@ -11,12 +11,22 @@ ENTITY reaction IS
 	);
 	PORT(
 		CLK_50, STRT_BTN, RESP_BTN	: IN STD_LOGIC;
+		HLF_SW, DIR_SW			: IN STD_LOGIC;
 		LED_0				: OUT STD_LOGIC;
 		SSD_0, SSD_1, SSD_2, SSD_3	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0)
 	);
 END reaction;
 
 ARCHITECTURE driver OF reaction IS
+
+	FUNCTION TO_INTEGER(s : STD_LOGIC) RETURN NATURAL IS
+	BEGIN
+		IF s = '1' THEN
+			RETURN 1;
+		ELSE
+			RETURN 0;
+		END IF;
+	END FUNCTION;
 
 	COMPONENT prng IS
 		PORT ( 
@@ -77,6 +87,7 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 	VARIABLE tick: NATURAL RANGE 0 TO MAX_DELAY * 2 := 0;
 	VARIABLE wait_ticks : INTEGER RANGE 0 TO MAX_DELAY * 2 := 0;
 	VARIABLE response_time : INTEGER RANGE 0 TO MAX_DELAY * 2 := 0;
+	VARIABLE dir		: INTEGER RANGE 0 TO 1 := 0;
 
 	BEGIN IF RISING_EDGE(CLK_50) THEN
 		CASE state IS
@@ -99,7 +110,13 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 				tick := tick + 1;
 				IF tick = (MAX_DELAY * 2) - (MAX_DELAY / wait_ticks * wait_ticks) THEN
 					state <= COUNTING;
-					led_idx <= "00000";
+					IF DIR_SW = '1' THEN 
+						led_idx <= "00000";
+						dir := 1;
+					ELSE
+						led_idx <= STD_LOGIC_VECTOR(TO_UNSIGNED(LED_AMT, led_idx'length));
+						dir := 0;
+					END IF;
 					tick := 0;
 					response_time := 0;
 					green   <= STD_LOGIC_VECTOR(TO_UNSIGNED(255, green'length));
@@ -107,17 +124,21 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 				END IF;
 			WHEN COUNTING =>
 				tick := tick + 1;
-				IF tick = (LED_AMT * DELAY_PER_LED) + DELAY_PER_LED THEN		-- Response timed-out
+				IF tick = ((LED_AMT * DELAY_PER_LED) + DELAY_PER_LED) / (1 + TO_INTEGER(HLF_SW)) THEN	-- Response timed-out
 					led_rst <= '1';
 					led_flsh <= '1';
 					state <= IDLE;
-				ELSIF RESP_BTN = '0' THEN												-- Response button pressed
+				ELSIF RESP_BTN = '0' THEN								-- Response button pressed
 					state <= BTN_WAIT_2;
 					ssd_en <=  '1';
 					response_time := tick / (F_CLK / 1000);
 				END IF;
-				IF tick mod DELAY_PER_LED = 0 THEN									-- Extra led should light up
-					led_idx   <= STD_LOGIC_VECTOR(UNSIGNED(led_idx) + 1);
+				IF tick mod (DELAY_PER_LED / (1 + TO_INTEGER(HLF_SW)))  = 0 THEN			-- Extra led should light up
+					IF dir = 1 THEN
+						led_idx   <= STD_LOGIC_VECTOR(UNSIGNED(led_idx) + 1);
+					ELSE
+						led_idx   <= STD_LOGIC_VECTOR(UNSIGNED(led_idx) - 1);
+					END IF;
 					red   <= STD_LOGIC_VECTOR(UNSIGNED(red) + 10);
 					green   <= STD_LOGIC_VECTOR(UNSIGNED(green) - 10);
 					led_upd   <= '1';

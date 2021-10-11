@@ -15,6 +15,7 @@ COMPONENT reaction IS
 	);
 	PORT(
 		CLK_50, STRT_BTN, RESP_BTN	: IN STD_LOGIC;
+		HLF_SW, DIR_SW			: IN STD_LOGIC;
 		LED_0				: OUT STD_LOGIC;
 		SSD_0, SSD_1, SSD_2, SSD_3	: OUT STD_LOGIC_VECTOR(6 DOWNTO 0)
 	);
@@ -23,6 +24,7 @@ END COMPONENT;
 	SIGNAL CLK_tb, STRT_BTN_tb, RESP_BTN_tb		: STD_LOGIC;
 	SIGNAL LED_0_tb					: STD_LOGIC;
 	SIGNAL SSD_0_tb, SSD_1_tb, SSD_2_tb, SSD_3_tb	: STD_LOGIC_VECTOR(6 downto 0);
+	SIGNAL DIR_SW_tb, HLF_SW_tb			: STD_LOGIC;
  
 BEGIN
 
@@ -30,6 +32,8 @@ BEGIN
 		CLK_50 => CLK_tb,
 		STRT_BTN => STRT_BTN_tb,
 		RESP_BTN => RESP_BTN_tb,
+		DIR_SW	 => DIR_SW_tb,
+		HLF_SW	 => HLF_SW_tb,
 		LED_0 => LED_0_tb,
 		SSD_0 => SSD_0_tb,
 		SSD_1 => SSD_1_tb,
@@ -43,6 +47,10 @@ BEGIN
 		CLK_tb      <= '0';
 		RESP_BTN_tb <= '1';
 		STRT_BTN_tb <= '1';
+
+		-- Light up leds upwards and use full (500 ms) reaction time.
+		DIR_SW_tb <= '0';
+		HLF_SW_tb <= '0';
 
 		FOR i IN 0 TO 1000000 LOOP
 			WAIT FOR 10 ps;
