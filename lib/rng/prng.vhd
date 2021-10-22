@@ -1,15 +1,20 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
+-- Pseudo Random Number Generator (LFSR)
+-- This component implements a PRNG based on the Linear
+-- Feedback Shift Register (LFSR). Based on previous 
+-- implementation in C.
+
 ENTITY prng IS
    PORT ( 
       CLK, RST, EN 	: IN STD_LOGIC;
-            NUM 		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+      NUM 				: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
    );
 END prng;
 
 ARCHITECTURE driver OF prng IS
-   SIGNAL LFSR		: STD_LOGIC_VECTOR(7 DOWNTO 0) := x"01";
+   SIGNAL LFSR			: STD_LOGIC_VECTOR(7 DOWNTO 0) := x"01";
 BEGIN
 
 PROCESS(CLK)

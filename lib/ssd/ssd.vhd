@@ -36,7 +36,7 @@ BEGIN
 				WHEN others => SEG <= "0111111";	-- -
 			END CASE;
 		ELSE
-			SEG <= "1111111";
+			SEG <= "1111111";						-- Turn segments off.
 		END IF;
 	END PROCESS;
 END driver;
