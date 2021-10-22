@@ -2,6 +2,15 @@ LIBRARY ieee;
 USE ieee.numeric_std.all; 
 USE ieee.std_logic_1164.all;
 
+-- Extra funcionalities of Lab 10 consist of;
+-- 1. Pattern when counting down.
+-- 2. High-score detection.
+-- 3. Circular pattern when new high-score reached.
+-- 4. Pseudo-Random Number Generator for random delay.
+-- 5. Count-down direction switch.
+-- 6. Response-time window switch.
+-- 7. Cheat-prevention; button has to be released.
+
 ENTITY reaction IS
 	GENERIC (
 		MAX_DELAY						: INTEGER := 150_000_000;				-- Maximum delay in cycles; 3 seconds.
@@ -95,16 +104,18 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 	BEGIN IF RISING_EDGE(CLK_50) THEN
 		CASE state IS
 			WHEN IDLE =>
-				-- Dont't update, flush or reset leds and wait for Start Button.
+				-- Dont't update, flush or reset leds.
 				led_upd 	<= '0';
 				led_flsh <= '0';
 				led_rst 	<= '0';
+				
+				-- Enable RNG and go to next state on button press.
 				IF STRT_BTN = '0' THEN
 					state <= BTN_WAIT_1;
 				END IF;
 
 			WHEN BTN_WAIT_1 =>
-				-- Duration until button press determines cycles of Pseudo-Random Number Generator.
+				-- Duration until button release determines cycles of Pseudo-Random Number Generator.
 				rng_en <= '1';
 				IF STRT_BTN = '1' THEN
 					rng_en 	<= '0';
@@ -125,12 +136,12 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 						led_idx  <= STD_LOGIC_VECTOR(TO_UNSIGNED(LED_AMT, led_idx'length));
 						dir 		:= 0;
 					END IF;
-					tick 		 	:= 0;
 					green   		<= STD_LOGIC_VECTOR(TO_UNSIGNED(255, green'length));
 					red   		<= STD_LOGIC_VECTOR(TO_UNSIGNED(0, red'length));
+					tick 		 	:= 0;
 					
 					IF RESP_BTN = '1' THEN			-- Only continue if response button is not pressed.
-						state 		<= COUNTING;
+						state 		<= COUNTING;	-- Since tick has been set to 0; counting starts over again.
 					END IF;
 				END IF;
 
@@ -150,7 +161,7 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 					tick 		:= 0;
 				END IF;
 				
-				IF tick mod (DELAY_PER_LED / (1 + TO_INTEGER(HLF_SW)))  = 0 THEN
+				IF tick mod (DELAY_PER_LED / (1 + TO_INTEGER(HLF_SW))) = 0 THEN
 					-- Increment lit up leds with 1.
 					IF dir = 1 THEN
 						led_idx   <= STD_LOGIC_VECTOR(UNSIGNED(led_idx) + 1);
@@ -168,7 +179,7 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 				END IF;
 
 			WHEN BTN_WAIT_2 =>
-				-- Clear possibly still asserted bits.
+				-- Clear possibly still asserted bits from above.
 				led_upd 		<= '0';
 				led_flsh 	<= '0';
 				
