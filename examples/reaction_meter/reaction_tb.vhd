@@ -9,9 +9,10 @@ architecture testbench of reaction_tb is
 
 COMPONENT reaction IS
 	GENERIC (
-		max_delay	: NATURAL := 1500;
-		delay_per_led	: NATURAL := 5;
-		f_clk		: INTEGER := 1
+		MAX_DELAY		: INTEGER := 1500;				-- Maximum delay in cycles; 3 seconds.
+		DELAY_PER_LED		: INTEGER := 10;				-- Delay per extra led; 20 milliseconds.
+		LED_AMT			: INTEGER := 24;				-- Amount of leds on ring.
+		F_CLK			: INTEGER := 500				-- Clock frequency in Hz.
 	);
 	PORT(
 		CLK_50, STRT_BTN, RESP_BTN	: IN STD_LOGIC;
@@ -57,14 +58,14 @@ BEGIN
  			CLK_tb <= not CLK_tb;
 			
 			-- Keep start button button pressed then release
-			IF (i > 50 and i < 60) THEN 
+			IF (i > 5000 and i < 6000) THEN 
 				STRT_BTN_tb <= '0'; 
 			ELSE 
 				STRT_BTN_tb <= '1'; 
 			END IF;
 
 			-- Keep response button pressed then release
-			IF (i > 1000 and i < 1200) THEN 
+			IF (i > 60000 and i < 62000) THEN 
 				RESP_BTN_tb <= '0'; 
 			ELSE 
 				RESP_BTN_tb <= '1'; 

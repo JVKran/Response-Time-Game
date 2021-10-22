@@ -18,24 +18,28 @@ ARCHITECTURE testbench OF ws2812b_tb IS
 			RES   		 : real    := 1.0			-- Above 50 us
 		);
 		PORT(
-			CLK, UPD, FLSH, RST	: IN STD_LOGIC;						-- Clock, Update & Flush
-			D_OUT	 	 		: OUT STD_LOGIC;					-- Data out
-			IDX		 			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update; optional todo, make dynamic.
+			CLK, UPD, FLSH, RST	: IN STD_LOGIC;				-- Clock, Update, Flush & Reset
+			LSHFT, RSHFT		: IN STD_LOGIC;				-- Left & Right Shift
+			D_OUT, RDY 		: OUT STD_LOGIC;			-- Data out & Ready
+			IDX		 	: IN STD_LOGIC_VECTOR(4 DOWNTO 0);	-- Index of led to update.
 			RED, GREEN, BLUE 	: IN STD_LOGIC_VECTOR(7 DOWNTO 0)	-- Red, Green & Blue inputs
 		);
 	END COMPONENT;
 
 	SIGNAL CLK_tb, FLSH_tb, UPD_tb, RST_tb	: STD_LOGIC;
-	SIGNAL IDX_tb			 				: STD_LOGIC_VECTOR(4 DOWNTO 0);
-	SIGNAL D_OUT_tb			 				: STD_LOGIC;
-	SIGNAL RED_tb, GREEN_tb, BLUE_tb 		: STD_LOGIC_VECTOR(7 DOWNTO 0);
+	SIGNAL LSHFT_tb, RSHFT_tb		: STD_LOGIC;
+	SIGNAL IDX_tb			 	: STD_LOGIC_VECTOR(4 DOWNTO 0);
+	SIGNAL D_OUT_tb			 	: STD_LOGIC;
+	SIGNAL RED_tb, GREEN_tb, BLUE_tb 	: STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 BEGIN
 	led: ws2812b PORT MAP (
 		CLK 	=> CLK_tb,
 		UPD 	=> UPD_tb,
 		FLSH 	=> FLSH_tb,
-		RST		=> RST_tb,
+		RST	=> RST_tb,
+		LSHFT	=> LSHFT_tb,
+		RSHFT	=> RSHFT_tb,
 		D_OUT 	=> D_OUT_tb,
 		IDX 	=> IDX_tb,
 		RED 	=> RED_tb,
@@ -47,6 +51,8 @@ BEGIN
 		-- Simulate with a simulation duration of 240 ns.
 		CLK_tb   <= '0';
 		RST_tb 	 <= '0';
+		RSHFT_tb <= '0';
+		LSHFT_tb <= '0';
 
 		-- Use identifying bit patterns for debug purposes.
 		GREEN_tb <= "10101010";
@@ -78,6 +84,18 @@ BEGIN
 				FLSH_tb  <= '1';
 			ELSIF cycle = 11801 THEN
 				RST_tb 	 <= '0';
+				FLSH_tb  <= '0';
+			END IF;
+
+			IF cycle = 23500 THEN
+				RSHFT_tb <= '1';
+				FLSH_tb  <= '1';
+			ELSIF cycle = 23750 THEN
+				LSHFT_tb <= '1';
+				FLSH_tb  <= '1';
+			ELSIF cycle = 23751 OR cycle = 23501 THEN
+				RSHFT_tb <= '0';
+				LSHFT_tb <= '0';
 				FLSH_tb  <= '0';
 			END IF;
 		END LOOP;

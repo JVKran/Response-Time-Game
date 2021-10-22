@@ -8,8 +8,8 @@ ARCHITECTURE tb of prng_tb IS
 
 	COMPONENT prng
 		PORT ( 
-			CLK, RST, EN 		: IN STD_LOGIC;
-				NUM 			: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+			CLK, RST, EN 	: IN STD_LOGIC;
+			NUM 		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
 		);
 	END COMPONENT;
 
@@ -17,6 +17,8 @@ ARCHITECTURE tb of prng_tb IS
 	SIGNAL NUM_tb 			: STD_LOGIC_VECTOR (7 DOWNTO 0);
 
 BEGIN
+
+	-- Suggested simulation time of 2ms.
 
 	pseudo_rng: prng PORT MAP(
 		CLK => CLK_tb,
