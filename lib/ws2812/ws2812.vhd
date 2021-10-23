@@ -54,29 +54,31 @@ ARCHITECTURE driver OF ws2812b IS
 BEGIN
 	PROCESS(CLK, FLSH, UPD, RST) IS
 	BEGIN IF RISING_EDGE(CLK) THEN
-		IF RST = '1' THEN
-			-- Turn off leds when RST is asserted.
-			memory <= (others=>(others=>'0'));
-		END IF;
 		CASE state IS
 			WHEN IDLE =>
 				D_OUT <= '0';
 				RDY 	<= '1';
+				
+				-- Flush changes to leds.
 				IF FLSH = '1' THEN
-					-- Flush changes to leds.
 					state 	<= PREP_H;
 					RDY 		<= '0';
 					bit_idx 	<= 23;
 					led_idx 	<= 0;
 				END IF;
 				
+				IF RST = '1' THEN
+					-- Turn off leds when RST is asserted.
+					memory <= (others=>(others=>'0'));
+				END IF;
+				
+				-- Update color in memory at selected index.
 				IF UPD = '1' THEN
-					-- Update color in memory at selected index.
 					memory(TO_INTEGER(UNSIGNED(IDX))) <= GREEN & RED & BLUE;
 				END IF;
 				
+				-- Shift colors left by concatenating array and element.
 				IF LSHFT = '1' THEN
-					-- Shift colors left. & concatenates.
 					memory <= memory(1 to memory'high) & memory(0);
 				ELSIF RSHFT = '1' THEN 
 					memory <= memory(memory'high) & memory(0 to memory'high - 1);

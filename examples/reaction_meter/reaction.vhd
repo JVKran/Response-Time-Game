@@ -97,9 +97,9 @@ BEGIN
 PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 
 	-- Timekeeping variables
-	VARIABLE tick, wait_ticks, resp_time 	: NATURAL RANGE 0 TO MAX_DELAY * 2 := 0;
+	VARIABLE tick, wait_ticks, resp_time 	: NATURAL RANGE 0 TO MAX_DELAY * 3 := 0;
 	VARIABLE dir									: INTEGER RANGE 0 TO 1 := 0;
-	VARIABLE high_score							: NATURAL RANGE 0 TO MAX_DELAY * 2 := MAX_DELAY * 2;
+	VARIABLE high_score							: NATURAL RANGE 0 TO MAX_DELAY * 3 := MAX_DELAY * 3;
 
 	BEGIN IF RISING_EDGE(CLK_50) THEN
 		CASE state IS
@@ -128,7 +128,7 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 				tick := tick + 1;
 				
 				-- Random delay of range (MAX_DELAY * 2) +- MAX_DELAY
-				IF tick = (MAX_DELAY * 2) - (MAX_DELAY / wait_ticks * wait_ticks) THEN
+				IF tick >= (MAX_DELAY * 2) - (MAX_DELAY / wait_ticks * wait_ticks) THEN
 					IF DIR_SW = '1' THEN 
 						led_idx 	<= STD_LOGIC_VECTOR(TO_UNSIGNED(0, led_idx'length));
 						dir 		:= 1;
@@ -148,15 +148,14 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 			WHEN COUNTING =>
 				tick := tick + 1;
 				
-				IF tick = ((LED_AMT * DELAY_PER_LED) + DELAY_PER_LED) / (1 + TO_INTEGER(HLF_SW)) THEN
+				IF tick >= ((LED_AMT * DELAY_PER_LED) + DELAY_PER_LED) / (1 + TO_INTEGER(HLF_SW)) AND led_rdy = '1' THEN
 					-- Response timed-out; back to IDLE.
 					led_rst 	<= '1';
 					led_flsh <= '1';
 					state 	<= IDLE;
-				ELSIF RESP_BTN = '0' THEN
+				ELSIF RESP_BTN = '0' AND led_rdy = '1' THEN
 					-- Response button pressed.
 					state 	<= BTN_WAIT_2;
-					ssd_en 	<=  '1';
 					resp_time := tick / (F_CLK / 1000);
 					tick 		:= 0;
 				END IF;
@@ -182,6 +181,8 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 				-- Clear possibly still asserted bits from above.
 				led_upd 		<= '0';
 				led_flsh 	<= '0';
+				led_rst 		<= '0';
+				ssd_en 		<= '1';
 				
 				-- Show response time on SSD.
 				ones 		 <=  STD_LOGIC_VECTOR(TO_UNSIGNED(resp_time mod 10, ones'length));
@@ -193,7 +194,7 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 				IF resp_time <= high_score THEN
 					high_score 	:= resp_time;
 					tick 		  	:= tick + 1;
-					IF tick >= DELAY_PER_LED THEN
+					IF tick >= DELAY_PER_LED AND led_rdy = '1' THEN
 						-- Shift in the right direction.
 						IF dir = 0 THEN
 							led_lsft <= '1';
