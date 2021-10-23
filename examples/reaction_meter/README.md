@@ -10,10 +10,10 @@ This folder contains a Finite State Machine (FSM) that can be used to measure on
 7. Cheat prevention.
 
 ## Demo
+Click on the image to open YouTube!
 
-<figure class="video_container">
-    <iframe src="https://www.youtube.com/embed/1ZETlR-mb2E" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
+[![Watch the video](https://i9.ytimg.com/vi_webp/1ZETlR-mb2E/mqdefault.webp?v=61740db2&sqp=CLSo0IsG&rs=AOn4CLBTOKiR-ExctfN_rtNrEvuOl56xaw)](https://youtu.be/1ZETlR-mb2E)
+
 
 ## Overview
 

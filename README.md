@@ -6,7 +6,10 @@ Two folders are particularly intresting. The [library folder](./lib) contains th
 > This was an assignment for the [Hardware Programming course](https://bitbucket.org/HR_ELEKTRO/hwp01/wiki/Home) on the Hogeschool Rotterdam.
 
 ## Demo
+Click on the image to open YouTube!
 
-<figure class="video_container">
+[![Watch the video](https://i9.ytimg.com/vi_webp/1ZETlR-mb2E/mqdefault.webp?v=61740db2&sqp=CLSo0IsG&rs=AOn4CLBTOKiR-ExctfN_rtNrEvuOl56xaw)](https://youtu.be/1ZETlR-mb2E)
+
+<!-- <figure class="video_container">
     <iframe src="https://www.youtube.com/embed/1ZETlR-mb2E" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
+</figure> -->
