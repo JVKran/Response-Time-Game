@@ -4,7 +4,7 @@ USE ieee.std_logic_1164.all;
 
 -- Extra funcionalities of Lab 10 consist of;
 -- 1. Pattern when counting down.
--- 2. High-score detection.
+-- 2. High-score tracking.
 -- 3. Circular pattern when new high-score reached.
 -- 4. Pseudo-Random Number Generator for random delay.
 -- 5. Count-down direction switch.
@@ -97,7 +97,8 @@ BEGIN
 PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 
 	-- Timekeeping variables
-	VARIABLE tick, wait_ticks, resp_time 	: NATURAL RANGE 0 TO MAX_DELAY * 3 := 0;
+	VARIABLE tick, wait_ticks  			 	: NATURAL RANGE 0 TO MAX_DELAY * 3 := 0;
+	VARIABLE resp_time							: INTEGER RANGE 0 TO DELAY_PER_LED * LED_AMT * 2 := 0;
 	VARIABLE dir									: INTEGER RANGE 0 TO 1 := 0;
 	VARIABLE high_score							: NATURAL RANGE 0 TO MAX_DELAY * 3 := MAX_DELAY * 3;
 
@@ -127,8 +128,8 @@ PROCESS(CLK_50, RESP_BTN, STRT_BTN)
 				wait_ticks := TO_INTEGER(UNSIGNED(rnd_delay));
 				tick := tick + 1;
 				
-				-- Random delay of range (MAX_DELAY * 2) +- MAX_DELAY
-				IF tick >= (MAX_DELAY * 2) - (MAX_DELAY / wait_ticks * wait_ticks) THEN
+				-- Random delay of range (MAX_DELAY * 2) - 0-MAX_DELAY
+				IF tick >= (MAX_DELAY * 2) - (MAX_DELAY / 255 * wait_ticks) THEN
 					IF DIR_SW = '1' THEN 
 						led_idx 	<= STD_LOGIC_VECTOR(TO_UNSIGNED(0, led_idx'length));
 						dir 		:= 1;
