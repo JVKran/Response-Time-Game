@@ -52,7 +52,7 @@ ARCHITECTURE driver OF ws2812b IS
 	SIGNAL counter  : unsigned(15 DOWNTO 0);							-- Maintaining of timings.
 
 BEGIN
-	PROCESS(CLK, FLSH, UPD, RST) IS
+	PROCESS(CLK) IS
 	BEGIN IF RISING_EDGE(CLK) THEN
 		CASE state IS
 			WHEN IDLE =>
@@ -67,11 +67,6 @@ BEGIN
 					led_idx 	<= 0;
 				END IF;
 				
-				IF RST = '1' THEN
-					-- Turn off leds when RST is asserted.
-					memory <= (others=>(others=>'0'));
-				END IF;
-				
 				-- Update color in memory at selected index.
 				IF UPD = '1' THEN
 					memory(TO_INTEGER(UNSIGNED(IDX))) <= GREEN & RED & BLUE;
@@ -82,6 +77,11 @@ BEGIN
 					memory <= memory(1 to memory'high) & memory(0);
 				ELSIF RSHFT = '1' THEN 
 					memory <= memory(memory'high) & memory(0 to memory'high - 1);
+				END IF;
+				
+				-- Turn off leds when RST is asserted.
+				IF RST = '1' THEN
+					memory <= (others=>(others=>'0'));
 				END IF;
 				
 			WHEN PREP_H =>

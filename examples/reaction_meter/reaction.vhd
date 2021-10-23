@@ -55,7 +55,7 @@ ARCHITECTURE driver OF reaction IS
 	
 	COMPONENT ws2812b IS
 		GENERIC(
-			LED_AMT		 				 : INTEGER := LED_AMT					-- 24 Leds on ring
+			LED_AMT		 			: INTEGER := LED_AMT						-- 24 Leds on ring
 		);
 		PORT(
 			CLK, UPD, FLSH, RST	: IN STD_LOGIC;							-- Clock, Update, Flush & Reset
@@ -94,11 +94,13 @@ BEGIN
 	tens_ssd			: ssd PORT MAP (INP => tens, EN => ssd_en, SEG => SSD_1);
 	ones_ssd			: ssd PORT MAP (INP => ones, EN => ssd_en, SEG => SSD_0);
 
-PROCESS(CLK_50, RESP_BTN, STRT_BTN)
+PROCESS(CLK_50)
 
 	-- Timekeeping variables
 	VARIABLE tick, wait_ticks  			 	: NATURAL RANGE 0 TO MAX_DELAY * 3 := 0;
 	VARIABLE resp_time							: INTEGER RANGE 0 TO DELAY_PER_LED * LED_AMT * 2 := 0;
+	
+	-- Visualization variables
 	VARIABLE dir									: INTEGER RANGE 0 TO 1 := 0;
 	VARIABLE high_score							: NATURAL RANGE 0 TO MAX_DELAY * 3 := MAX_DELAY * 3;
 
