@@ -14,7 +14,7 @@ A video tells more than a thousand words, so... [Here you go](https://nextcloud.
 
 ## Overview
 
-![Overview](doc/overview.svg "Overview")
+![Overview](doc/Overview.svg "Overview")
 
 ## Statemachine
 
