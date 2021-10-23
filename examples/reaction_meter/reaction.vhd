@@ -161,9 +161,7 @@ PROCESS(CLK_50)
 					state 	<= BTN_WAIT_2;
 					resp_time := tick / (F_CLK / 1000);
 					tick 		:= 0;
-				END IF;
-				
-				IF tick mod (DELAY_PER_LED / (1 + TO_INTEGER(HLF_SW))) = 0 THEN
+				ELSIF tick mod (DELAY_PER_LED / (1 + TO_INTEGER(HLF_SW))) = 0 THEN
 					-- Increment lit up leds with 1.
 					IF dir = 1 THEN
 						led_idx   <= STD_LOGIC_VECTOR(UNSIGNED(led_idx) + 1);
@@ -193,8 +191,8 @@ PROCESS(CLK_50)
 				hundreds  <=  STD_LOGIC_VECTOR(TO_UNSIGNED((resp_time / 100) mod 10, hundreds'length));
 				thousands <=  STD_LOGIC_VECTOR(TO_UNSIGNED(resp_time / 1000, thousands'length));
 				
-				-- Shift visualized response time on ring.
-				IF resp_time <= high_score THEN
+				IF RESP_BTN = '0' AND resp_time <= high_score THEN
+					-- Shift visualized response time on ring.
 					high_score 	:= resp_time;
 					tick 		  	:= tick + 1;
 					IF tick >= DELAY_PER_LED AND led_rdy = '1' THEN
@@ -211,10 +209,8 @@ PROCESS(CLK_50)
 						led_rsft <= '0';
 						led_flsh <= '0';
 					END IF;
-				END IF;
-
-				-- Go to IDLE when button released and led is ready for shutdown.
-				IF RESP_BTN = '1' AND led_rdy = '1' THEN
+				ELSIF RESP_BTN = '1' AND led_rdy = '1' THEN
+					-- Go to IDLE when button released and led is ready for shutdown.
 					state 	<= IDLE;
 					led_lsft <= '0';
 					led_rsft <= '0';
