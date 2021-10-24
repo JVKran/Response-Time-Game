@@ -88,7 +88,7 @@ BEGIN
 	leds	: ws2812b PORT MAP (CLK => CLK_50, UPD => led_upd, FLSH => led_flsh, RST => led_rst, RDY => led_rdy,
 										LSHFT => led_lsft, RSHFT => led_rsft, D_OUT => LED_0, IDX => led_idx, RED => red, GREEN => green, BLUE => blue);
 
-	-- Response time visualization.
+	-- Response time visualization on seven segment displays.
 	thousands_ssd	: ssd PORT MAP (INP => thousands, EN => ssd_en, SEG => SSD_3);
 	hundreds_ssd	: ssd PORT MAP (INP => hundreds, EN => ssd_en, SEG => SSD_2);
 	tens_ssd			: ssd PORT MAP (INP => tens, EN => ssd_en, SEG => SSD_1);
@@ -158,9 +158,9 @@ PROCESS(CLK_50)
 					state 	<= IDLE;
 				ELSIF RESP_BTN = '0' AND led_rdy = '1' THEN
 					-- Response button pressed.
-					state 	<= BTN_WAIT_2;
 					resp_time := tick / (F_CLK / 1000);
-					tick 		:= 0;
+					tick 		 := 0;
+					state 	 <= BTN_WAIT_2;
 				ELSIF tick mod (DELAY_PER_LED / (1 + TO_INTEGER(HLF_SW))) = 0 THEN
 					-- Increment lit up leds with 1.
 					IF dir = 1 THEN
@@ -211,12 +211,12 @@ PROCESS(CLK_50)
 					END IF;
 				ELSIF RESP_BTN = '1' AND led_rdy = '1' THEN
 					-- Go to IDLE when button released and led is ready for shutdown.
-					state 	<= IDLE;
 					led_lsft <= '0';
 					led_rsft <= '0';
 					led_rst 	<= '1';
 					led_flsh <= '1';
-					ssd_en 	<=  '0';
+					ssd_en 	<= '0';
+					state 	<= IDLE;
 				END IF;
 
 			WHEN OTHERS =>
